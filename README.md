@@ -7,9 +7,7 @@
  
  Call function calculate([translation vector], [rotation vector]) to solve inverse kinematic for rotation angles for 6 servos
  
- 
- ![Alt Text](https://raw.githubusercontent.com/Yeok-c/Stewart_Py/main/ezgif-7-487de93db9.gif)
-
+ [<img src="/doc/readme_resources/ezgif-7-487de93db9.gif" width="32" height="32">](/doc/readme_resources/ezgif-7-487de93db9.gif)
 
 #### About the author
 
