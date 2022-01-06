@@ -6,3 +6,7 @@
  ![Alt Text](https://raw.githubusercontent.com/Yeok-c/Stewart_Py/main/ezgif-7-487de93db9.gif)
 
 
+- [x] Barebone Python Implementation
+- [ ] Jacobian Controller (Open loop)
+- [ ] Error plots
+- [ ] Simulate to find working envelope?
