@@ -1,7 +1,7 @@
 import numpy as np
 from stewart_controller import Stewart_Platform
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+
 
 
 import sys    

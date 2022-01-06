@@ -182,11 +182,11 @@ class Stewart_Platform(object):
         ax.set_ylim3d(-10, 10)
         ax.set_zlim3d(0, 20)
 
-        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))]), zs='z')
-        face_color = [0, 1, 0] # alternative: matplotlib.colors.rgb2hex([0.5, 0.5, 1])
-        base_plot = Poly3DCollection([list(np.transpose(s.leg))])
-        ax.add_collection3d(base_plot, zs='z')
-        base_plot.set_facecolor(face_color)
+        # ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))]), zs='z')
+        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))], facecolors='green', alpha=0.25))
+
+        # ax.add_collection3d(base_plot, zs='z')
+        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.leg))], facecolors='blue', alpha=0.25))
 
         s.plot3D_line(ax, s.B, s.joint_B, 'red')
         s.plot3D_line(ax, s.joint_B, s.leg, 'black')
