@@ -2,7 +2,8 @@
  Python implementation of stewart platform
 
  Open the Jupyter Notebook file for a full tutorial! 
-  [<img src="/doc/readme_resources/tutorial_ss.png" width="40%" height="40%">](/doc/readme_resources/tutorial_ss)
+ 
+[<img src="/doc/readme_resources/tutorial_ss.png">](/doc/readme_resources/tutorial_ss)
 
  
  Usage: 
