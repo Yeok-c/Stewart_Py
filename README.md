@@ -13,9 +13,9 @@
  
  Create object by defining parameters for the stewart platform
       
-     Stewart_Platform(r_B, r_P, lhl, ldl, Psi_B, Psi_P), where
+     Stewart_Platform(r_B, r_P, lhl, ldl, Psi_B, Psi_P)
  
- Where 
+ Where   
  r_B = Radius of Base (Bottom)  
  r_P = Radius of Platform (Top)  
  lhl = Servo Horn Length  
