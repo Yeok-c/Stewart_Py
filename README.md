@@ -16,13 +16,13 @@
      Stewart_Platform(r_B, r_P, lhl, ldl, Psi_B, Psi_P), where
  
  Where 
- r_B = Radius of Base (Bottom)
- r_P = Radius of Platform (Top)
- lhl = Servo Horn Length
- ldl = Rod length
- Psi_B = Half of angle between two anchors on the base
- Psi_P = Half of angle between two anchors on the platform
- For details please refer to my tutorial https://github.com/Yeok-c/Stewart_Py
+ r_B = Radius of Base (Bottom)  
+ r_P = Radius of Platform (Top)  
+ lhl = Servo Horn Length  
+ ldl = Rod length  
+ Psi_B = Half of angle between two anchors on the base  
+ Psi_P = Half of angle between two anchors on the platform  
+ For details please refer to my tutorial https://github.com/Yeok-c/Stewart_Py  
     
  Call function calculate([translation vector], [rotation vector]) to solve inverse kinematic for rotation angles (Radian) for 6 servos
  
