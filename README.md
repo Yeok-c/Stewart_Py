@@ -1,4 +1,7 @@
 # Stewart_Py
+
+ [<img src="/doc/readme_resources/ezgif-7-487de93db9.gif" width="40%" height="40%">](/doc/readme_resources/ezgif-7-487de93db9.gif)
+
  Python implementation of stewart platform
 
  Open the Jupyter Notebook file for a full tutorial! 
@@ -29,8 +32,6 @@
      servo_angles = platform.calculate( np.array([X,Y,Z), np.array([Pitch, Roll, Yaw]) )
 
  
- [<img src="/doc/readme_resources/ezgif-7-487de93db9.gif" width="40%" height="40%">](/doc/readme_resources/ezgif-7-487de93db9.gif)
-
 #### Sources and additional reading
 Robert Eisele's Explanation and js implementation: 
 https://www.xarg.org/paper/inverse-kinematics-of-a-stewart-platform/
