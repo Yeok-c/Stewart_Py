@@ -17,61 +17,59 @@ class Stewart_Platform(object):
     alpha_B = 
     alpha_P = 
     """
-    def __init__(s, r_B, r_P, lhl, ldl, alpha_B, alpha_P):
+    def __init__(s, r_B, r_P, lhl, ldl, gamma_B, gamma_P, ref_rotation):
         pi = np.pi
-
-        ## Define the Geometry of the platform
-
-        # Beta (Angle)
-        # Angle between the plane in which the servo arm moves and the xz-plane of the base CS.
         beta = np.array([ 
-            pi+pi/2,        
+            pi/2 + pi,        
             pi/2,
-            2*pi/3+pi+pi/2, 
-            2*pi/3+pi/2,
-            4*pi/3+pi+pi/2, 
-            4*pi/3+pi/2] )
+            2*pi/3 + pi/2 + pi , 
+            2*pi/3 + pi/2,
+            4*pi/3 + pi/2 + pi , 
+            4*pi/3 + pi/2] )
 
-        # Theta_B (Polar coordinates)
-        # Direction of the points where the servo arm is attached to the servo axis.
-        theta_B = np.array([ 
-            alpha_B, 
-            alpha_B,
-            pi/3 + alpha_B, 
-            pi/3 - alpha_B, 
-            pi/3 - alpha_B, 
-            pi/3 + alpha_B])
+        # Psi_B (Polar coordinates)
+        psi_B = np.array([ 
+            -gamma_B, 
+            gamma_B,
+            2*pi/3 - gamma_B, 
+            2*pi/3 + gamma_B, 
+            2*pi/3 + 2*pi/3 - gamma_B, 
+            2*pi/3 + 2*pi/3 + gamma_B])
 
-        # Theta_P (Polar coordinates)
+        # psi_P (Polar coordinates)
         # Direction of the points where the rod is attached to the platform.
-        theta_P = np.array([ 
-            pi/3 - alpha_P, 
-            pi/3 - alpha_P, 
-            pi/3 + alpha_P, 
-            alpha_P,
-            alpha_P, 
-            pi/3 + alpha_P] )
+        psi_P = np.array([ 
+            pi/3 + 2*pi/3 + 2*pi/3 + gamma_P,
+            pi/3 + -gamma_P, 
+            pi/3 + gamma_P,
+            pi/3 + 2*pi/3 - gamma_P, 
+            pi/3 + 2*pi/3 + gamma_P, 
+            pi/3 + 2*pi/3 + 2*pi/3 - gamma_P])
+
+        psi_B = psi_B + np.repeat(ref_rotation, 6)
+        psi_P = psi_P + np.repeat(ref_rotation, 6)
+        beta = beta + np.repeat(ref_rotation, 6)
 
         # Coordinate of the points where servo arms 
         # are attached to the corresponding servo axis.
         B = r_B * np.array( [ 
-            [ np.cos(theta_B[0]), -np.sin(theta_B[0]), 0],
-            [ np.cos(theta_B[1]),  np.sin(theta_B[1]), 0],
-            [-np.cos(theta_B[2]),  np.sin(theta_B[2]), 0],
-            [-np.cos(theta_B[3]),  np.sin(theta_B[3]), 0],
-            [-np.cos(theta_B[4]), -np.sin(theta_B[4]), 0],
-            [-np.cos(theta_B[5]), -np.sin(theta_B[5]), 0] ])
+            [ np.cos(psi_B[0]), np.sin(psi_B[0]), 0],
+            [ np.cos(psi_B[1]), np.sin(psi_B[1]), 0],
+            [ np.cos(psi_B[2]), np.sin(psi_B[2]), 0],
+            [ np.cos(psi_B[3]), np.sin(psi_B[3]), 0],
+            [ np.cos(psi_B[4]), np.sin(psi_B[4]), 0],
+            [ np.cos(psi_B[5]), np.sin(psi_B[5]), 0] ])
         B = np.transpose(B)
             
         # Coordinates of the points where the rods 
         # are attached to the platform.
         P = r_P * np.array([ 
-            [ np.cos(theta_P[0]), -np.sin(theta_P[0]), 0],
-            [ np.cos(theta_P[1]),  np.sin(theta_P[1]), 0],
-            [ np.cos(theta_P[2]),  np.sin(theta_P[2]), 0],
-            [-np.cos(theta_P[3]),  np.sin(theta_P[3]), 0],
-            [-np.cos(theta_P[4]), -np.sin(theta_P[4]), 0],
-            [ np.cos(theta_P[5]), -np.sin(theta_P[5]), 0] ])
+            [ np.cos(psi_P[0]),  np.sin(psi_P[0]), 0],
+            [ np.cos(psi_P[1]),  np.sin(psi_P[1]), 0],
+            [ np.cos(psi_P[2]),  np.sin(psi_P[2]), 0],
+            [ np.cos(psi_P[3]),  np.sin(psi_P[3]), 0],
+            [ np.cos(psi_P[4]),  np.sin(psi_P[4]), 0],
+            [ np.cos(psi_P[5]),  np.sin(psi_P[5]), 0] ])
         P = np.transpose(P)
 
         # Save initialized variables
@@ -79,13 +77,13 @@ class Stewart_Platform(object):
         s.r_P = r_P
         s.lhl = lhl
         s.ldl = ldl
-        s.alpha_B = alpha_B
-        s.alpha_P = alpha_P
+        s.gamma_B = gamma_B
+        s.gamma_P = gamma_P
 
         # Calculated params
         s.beta = beta
-        s.theta_B = theta_B
-        s.theta_P = theta_P
+        s.psi_B = psi_B
+        s.psi_P = psi_P
         s.B = B
         s.P = P
 
@@ -95,67 +93,35 @@ class Stewart_Platform(object):
         # s.home_pos = np.transpose(home_pos)
 
         # Allocate for variables
-        s.leg = np.zeros((3,6))
-        s.llegl = np.zeros((6))
+        s.l = np.zeros((3,6))
+        s.lll = np.zeros((6))
         s.angles = np.zeros((6))
-        s.joint_B = np.zeros((3,6)) 
+        s.H = np.zeros((3,6)) 
 
-    def calculate_matrix(s, trans, orient):
+    def calculate(s, trans, rotation):
         trans = np.transpose(trans)
-        orient = np.transpose(orient)
+        rotation = np.transpose(rotation)
 
         # Get rotation matrix of platform. RotZ* RotY * RotX -> matmul
-        R = np.matmul( np.matmul(s.rotZ(orient[2]), s.rotY(orient[1])), s.rotX(orient[0]) )
-        
+        R = np.matmul( np.matmul(s.rotX(rotation[0]), s.rotY(rotation[1])), s.rotZ(rotation[2]) )
+
         # Get leg length for each leg
-        s.leg = np.repeat(trans[:, np.newaxis], 6, axis=1) + np.repeat(s.home_pos[:, np.newaxis], 6, axis=1) + np.matmul(np.transpose(R), s.P) - s.B 
-        s.llegl = np.linalg.norm(s.leg, axis=0)
+        # leg = np.repeat(trans[:, np.newaxis], 6, axis=1) + np.repeat(home_pos[:, np.newaxis], 6, axis=1) + np.matmul(np.transpose(R), P) - B 
 
-        # Position of legs, wrt to their individual bases
-        lx = s.leg[0, :]
-        ly = s.leg[1, :]
-        lz = s.leg[2, :]
+        # Get leg length for each leg
+        s.l = np.repeat(trans[:, np.newaxis], 6, axis=1) + np.repeat(s.home_pos[:, np.newaxis], 6, axis=1) + np.matmul(R, s.P) - s.B 
+        s.lll = np.linalg.norm(s.l, axis=0)
 
-        # Calculate auxiliary quatities g, f and e
-        g = s.llegl**2 - ( s.ldl**2 - s.lhl**2 )
-        e = 2 * s.lhl * lz
-
-        # Calculate servo angles for each leg
-        for k in range(6):
-            fk = 2 * s.lhl * (np.cos(s.beta[k]) * lx[k] + np.sin(s.beta[k]) * ly[k])
-            
-            # The wanted position could be achieved if the solution of this
-            # equation is real for all i
-            s.angles[k] = np.arcsin(g[k] / np.sqrt(e[k]**2 + fk**2)) - np.arctan2(fk,e[k])
-            
-            # Get postion of the point where a spherical joint connects servo arm and rod.
-            s.joint_B[:, k] = np.transpose([ s.lhl * np.cos(s.angles[k]) * np.cos(s.beta[k]) + s.B[0,k],
-                            s.lhl * np.cos(s.angles[k]) * np.sin(s.beta[k]) + s.B[1,k],
-                            s.lhl * np.sin(s.angles[k]) ])
-        
         # Position of leg in global frame
-        s.leg = s.leg + s.B
+        s.L = s.l + s.B
 
-        return s.angles
-        
-    def calculate(s, trans, orient):
-        trans = np.transpose(trans)
-        orient = np.transpose(orient)
-
-        # Get rotation matrix of platform. RotZ* RotY * RotX -> matmul
-        R = np.matmul( np.matmul(s.rotZ(orient[2]), s.rotY(orient[1])), s.rotX(orient[0]) )
-        
-        # Get leg length for each leg
-        for i in range(6):        
-            s.leg[:,i] = trans + s.home_pos + np.matmul(np.transpose(R), s.P[:,i]) - s.B[:,i]      
-            s.llegl[i] = np.linalg.norm(s.leg[:,i])
+        # Position of legs, wrt to their individual bases, split for clarity.
+        lx = s.l[0, :]
+        ly = s.l[1, :]
+        lz = s.l[2, :]
 
         # Calculate auxiliary quatities g, f and e
-        lx = s.leg[0, :]
-        ly = s.leg[1, :]
-        lz = s.leg[2, :]
-
-        g = s.llegl**2 - ( s.ldl**2 - s.lhl**2 )
+        g = s.lll**2 - ( s.ldl**2 - s.lhl**2 )
         e = 2 * s.lhl * lz
 
         # Calculate servo angles for each leg
@@ -167,14 +133,18 @@ class Stewart_Platform(object):
             s.angles[k] = np.arcsin(g[k] / np.sqrt(e[k]**2 + fk**2)) - np.arctan2(fk,e[k])
             
             # Get postion of the point where a spherical joint connects servo arm and rod.
-            s.joint_B[:, k] = np.transpose([ s.lhl * np.cos(s.angles[k]) * np.cos(s.beta[k]) + s.B[0,k],
+            s.H[:, k] = np.transpose([ s.lhl * np.cos(s.angles[k]) * np.cos(s.beta[k]) + s.B[0,k],
                             s.lhl * np.cos(s.angles[k]) * np.sin(s.beta[k]) + s.B[1,k],
                             s.lhl * np.sin(s.angles[k]) ])
         
-        # Set params for class
-        s.leg = s.leg + s.B
-
         return s.angles
+
+    def plot3D_line(s, ax, vec_arr_origin, vec_arr_dest, color_):
+        for i in range(6):
+            ax.plot([vec_arr_origin[0, i] , vec_arr_dest[0, i]],
+            [vec_arr_origin[1, i], vec_arr_dest[1, i]],
+            [vec_arr_origin[2, i],vec_arr_dest[2, i]],
+            color=color_)
 
     def plot_platform(s):
         ax = plt.axes(projection='3d') # Data for a three-dimensional line
@@ -186,19 +156,13 @@ class Stewart_Platform(object):
         ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))], facecolors='green', alpha=0.25))
 
         # ax.add_collection3d(base_plot, zs='z')
-        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.leg))], facecolors='blue', alpha=0.25))
+        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.L))], facecolors='blue', alpha=0.25))
 
-        s.plot3D_line(ax, s.B, s.joint_B, 'red')
-        s.plot3D_line(ax, s.joint_B, s.leg, 'black')
-        s.plot3D_line(ax, s.B, s.leg, 'yellow')
+        s.plot3D_line(ax, s.B, s.H, 'red')
+        s.plot3D_line(ax, s.H, s.L, 'black')
+        s.plot3D_line(ax, s.B, s.L, 'orange')
         return ax
 
-    def plot3D_line(s, ax, vec_arr_origin, vec_arr_dest, color_):
-        for i in range(6):
-            ax.plot([vec_arr_origin[0, i] , vec_arr_dest[0, i]],
-            [vec_arr_origin[1, i], vec_arr_dest[1, i]],
-            [vec_arr_origin[2, i],vec_arr_dest[2, i]],
-            color=color_)
 
     def rotX(s, phi):
         rotx = np.array([
