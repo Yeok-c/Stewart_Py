@@ -103,7 +103,8 @@ class Stewart_Platform(object):
         rotation = np.transpose(rotation)
 
         # Get rotation matrix of platform. RotZ* RotY * RotX -> matmul
-        R = np.matmul( np.matmul(s.rotX(rotation[0]), s.rotY(rotation[1])), s.rotZ(rotation[2]) )
+        R = np.matmul( np.matmul(s.rotZ(rotation[2]), s.rotY(rotation[1])), s.rotX(rotation[0]) )
+        # R = np.matmul( np.matmul(s.rotX(rotation[0]), s.rotY(rotation[1])), s.rotZ(rotation[2]) )
 
         # Get leg length for each leg
         # leg = np.repeat(trans[:, np.newaxis], 6, axis=1) + np.repeat(home_pos[:, np.newaxis], 6, axis=1) + np.matmul(np.transpose(R), P) - B 
@@ -148,9 +149,12 @@ class Stewart_Platform(object):
 
     def plot_platform(s):
         ax = plt.axes(projection='3d') # Data for a three-dimensional line
-        ax.set_xlim3d(-10, 10)
-        ax.set_ylim3d(-10, 10)
-        ax.set_zlim3d(0, 20)
+        ax.set_xlim3d(-100, 100)
+        ax.set_ylim3d(-100, 100)
+        ax.set_zlim3d(0, 200)
+        ax.set_xlabel('x-axis')
+        ax.set_ylabel('y-axis')
+        ax.set_zlabel('z-axis')
 
         # ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))]), zs='z')
         ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))], facecolors='green', alpha=0.25))
@@ -163,24 +167,62 @@ class Stewart_Platform(object):
         s.plot3D_line(ax, s.B, s.L, 'orange')
         return ax
 
+    def plot_platform_g(s, global_trans):
+        ax = plt.axes(projection='3d') # Data for a three-dimensional line
+        ax.set_xlim3d(-400, 400)
+        ax.set_ylim3d(-400, 400)
+        ax.set_zlim3d(0, 200)
+        ax.set_xlabel('x-axis')
+        ax.set_ylabel('y-axis')
+        ax.set_zlabel('z-axis')
+
+        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.B))], facecolors='green', alpha=0.25))
+        ax.add_collection3d(Poly3DCollection([list(np.transpose(s.L))], facecolors='blue', alpha=0.25))
+
+        s.plot3D_line(ax, s.B, s.H, 'red')
+        s.plot3D_line(ax, s.H, s.L, 'black')
+        s.plot3D_line(ax, s.B, s.L, 'orange')
+        return ax
 
     def rotX(s, phi):
         rotx = np.array([
             [1,     0    ,    0    ],
-            [0,  np.cos(phi), np.sin(phi)],
-            [0, -np.sin(phi), np.cos(phi)] ])
+            [0,  np.cos(phi), -np.sin(phi)],
+            [0,  np.sin(phi), np.cos(phi)] ])
         return rotx
 
     def rotY(s, theta):    
         roty = np.array([
-            [np.cos(theta), 0, -np.sin(theta) ],
+            [np.cos(theta), 0, np.sin(theta) ],
             [0         , 1,     0       ],
-            [np.sin(theta), 0,  np.cos(theta) ] ])   
+            [-np.sin(theta), 0,  np.cos(theta) ] ])   
         return roty
         
     def rotZ(s, psi):    
         rotz = np.array([
-            [ np.cos(psi), np.sin(psi), 0 ],
-            [-np.sin(psi), np.cos(psi), 0 ],
+            [ np.cos(psi), -np.sin(psi), 0 ],
+            [np.sin(psi), np.cos(psi), 0 ],
             [   0        ,     0      , 1 ] ])   
         return rotz
+
+    # Roll yaw pitch notation
+    # def rotX(s, phi):
+    #     rotx = np.array([
+    #         [1,     0    ,    0    ],
+    #         [0,  np.cos(phi), np.sin(phi)],
+    #         [0, -np.sin(phi), np.cos(phi)] ])
+    #     return rotx
+
+    # def rotY(s, theta):    
+    #     roty = np.array([
+    #         [np.cos(theta), 0, -np.sin(theta) ],
+    #         [0         , 1,     0       ],
+    #         [np.sin(theta), 0,  np.cos(theta) ] ])   
+    #     return roty
+        
+    # def rotZ(s, psi):    
+    #     rotz = np.array([
+    #         [ np.cos(psi), np.sin(psi), 0 ],
+    #         [-np.sin(psi), np.cos(psi), 0 ],
+    #         [   0        ,     0      , 1 ] ])   
+    #     return rotz
