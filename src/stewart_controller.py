@@ -39,12 +39,12 @@ class Stewart_Platform(object):
         # psi_P (Polar coordinates)
         # Direction of the points where the rod is attached to the platform.
         psi_P = np.array([ 
+            pi/3 + 2*pi/3 + 2*pi/3 - gamma_P,
             pi/3 + 2*pi/3 + 2*pi/3 + gamma_P,
             pi/3 + -gamma_P, 
             pi/3 + gamma_P,
             pi/3 + 2*pi/3 - gamma_P, 
-            pi/3 + 2*pi/3 + gamma_P, 
-            pi/3 + 2*pi/3 + 2*pi/3 - gamma_P])
+            pi/3 + 2*pi/3 + gamma_P ])
 
         psi_B = psi_B + np.repeat(ref_rotation, 6)
         psi_P = psi_P + np.repeat(ref_rotation, 6)
