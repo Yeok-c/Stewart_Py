@@ -1,10 +1,10 @@
 # Stewart_Py
 
- [<img src="/doc/readme_resources/ezgif-7-487de93db9.gif" width="40%" height="40%">](/doc/readme_resources/ezgif-7-487de93db9.gif)
+ [<img src="/doc/readme_resources/ezgif-7-487de93db9.gif">](/doc/readme_resources/ezgif-7-487de93db9.gif)
 
  Python implementation and step-by-step inverse kinematic explanation of stewart platform
  
-[<img src="/doc/readme_resources/tutorial_ss.png">](/doc/readme_resources/tutorial_ss)
+[<img src="/doc/readme_resources/tutorial_ss.png">](/doc/readme_resources/tutorial_ss.png)
 
  
  Usage: 
