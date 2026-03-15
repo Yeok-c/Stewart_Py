@@ -25,8 +25,11 @@ class TestHomePosition:
     def test_home_angles_all_equal(self):
         platform = _make_platform()
         result = platform.calculate(np.zeros(3), np.zeros(3))
-        # All 6 angles should be identical by symmetry (pairs)
         assert result.reachable
+        # All 6 angles should be identical by symmetry
+        np.testing.assert_allclose(
+            result.angles, result.angles[0] * np.ones(6), atol=1e-10,
+        )
 
     def test_home_no_nan(self):
         platform = _make_platform()

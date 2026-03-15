@@ -18,7 +18,7 @@ def main() -> None:
     platform = StewartPlatform(config)
 
     # Sweep pitch angle from -20 to +20 degrees
-    for ix in range(-20, 20):
+    for ix in range(-20, 21):
         angle = np.pi * ix / 180
         result = platform.calculate(
             trans=np.array([2.0, 1.0, 0.0]),

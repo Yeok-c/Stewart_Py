@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from stewart_py import PlatformConfig
+from stewart_py import PlatformConfig, StewartPlatform
 
 
 def _default_config(**overrides) -> PlatformConfig:
@@ -45,3 +45,15 @@ class TestPlatformConfigFrozen:
         cfg = _default_config()
         with pytest.raises(AttributeError):
             cfg.new_field = 42
+
+
+class TestGeometryValidation:
+    def test_invalid_geometry_raises(self):
+        """Rod and horn too short for the anchor radii should raise ValueError."""
+        cfg = PlatformConfig(
+            r_B=100.0, r_P=50.0,
+            horn_length=0.01, rod_length=0.01,
+            gamma_B=1.4, gamma_P=0.1,
+        )
+        with pytest.raises(ValueError, match="too short"):
+            StewartPlatform(cfg)

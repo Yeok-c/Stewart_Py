@@ -107,24 +107,33 @@ class StewartPlatform:
 
         # B: base anchor positions (3x6)
         B = config.r_B * np.array([
-            [np.cos(psi_B[i]), np.sin(psi_B[i]), 0] for i in range(6)
+            np.cos(psi_B),
+            np.sin(psi_B),
+            np.zeros(6),
         ])
-        B = np.transpose(B)
 
         # P: platform anchor positions (3x6)
         P = config.r_P * np.array([
-            [np.cos(psi_P[i]), np.sin(psi_P[i]), 0] for i in range(6)
+            np.cos(psi_P),
+            np.sin(psi_P),
+            np.zeros(6),
         ])
-        P = np.transpose(P)
 
         # Home position: platform height when all servos are at zero
         # z[i] should be identical for all 6 legs by symmetry; use first element.
-        z = np.sqrt(
+        discriminant = (
             config.rod_length ** 2
             + config.horn_length ** 2
             - (P[0] - B[0]) ** 2
             - (P[1] - B[1]) ** 2
         )
+        if np.any(discriminant < 0):
+            raise ValueError(
+                f"Invalid geometry: rod_length={config.rod_length} and "
+                f"horn_length={config.horn_length} are too short for the "
+                f"given anchor radii (r_B={config.r_B}, r_P={config.r_P})"
+            )
+        z = np.sqrt(discriminant)
         home_pos = np.array([0.0, 0.0, z[0]])
 
         self.beta = beta
@@ -147,6 +156,8 @@ class StewartPlatform:
 
         Returns:
             An :class:`IKResult` with servo angles and intermediate geometry.
+            If the pose is unreachable, ``reachable`` will be ``False`` and
+            angles are clamped to the nearest valid value (best-effort).
 
         Raises:
             ValueError: If *trans* or *rotation* do not have shape ``(3,)``.
@@ -158,8 +169,8 @@ class StewartPlatform:
         if rotation.shape != (3,):
             raise ValueError(f"rotation must have shape (3,), got {rotation.shape}")
 
-        # Rotation matrix: R = RotZ * RotY * RotX
-        R = np.matmul(np.matmul(rotZ(rotation[2]), rotY(rotation[1])), rotX(rotation[0]))
+        # Rotation matrix: R = RotZ * RotY * RotX (yaw-pitch-roll convention)
+        R = rotZ(rotation[2]) @ rotY(rotation[1]) @ rotX(rotation[0])
 
         # Leg vectors for each of 6 legs
         l = (

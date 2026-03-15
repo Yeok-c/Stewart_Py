@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -31,7 +29,7 @@ def _plot3D_lines(
 def plot_platform(
     B: NDArray[np.float64],
     result: IKResult,
-    ax: Optional[plt.Axes] = None,
+    ax: plt.Axes | None = None,
     limits: tuple[float, float, float, float, float, float] = (
         -100, 100, -100, 100, 0, 200,
     ),
